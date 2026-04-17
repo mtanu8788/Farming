@@ -151,7 +151,7 @@ export default function FarmerChatbot() {
             <span className="absolute inset-0 rounded-full bg-green-500 animate-ping opacity-20"></span>
             
             <div className="flex items-center gap-2">
-              <MessageCircle size={28} />
+              <MessageCircle size={29} />
               <span className="font-bold pr-1">AI Assistant</span>
             </div>
           </button>
