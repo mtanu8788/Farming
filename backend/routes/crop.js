@@ -1,48 +1,63 @@
 const express = require('express');
-const router = express.Router();
 const axios = require('axios');
 
-// POST /api/crop/recommend - Get crop recommendation
+const router = express.Router();
+
+const REQUIRED_FIELDS = [
+  'nitrogen',
+  'phosphorus',
+  'potassium',
+  'temperature',
+  'humidity',
+  'ph',
+  'rainfall',
+];
+
 router.post('/recommend', async (req, res) => {
   try {
-    const { nitrogen, phosphorus, potassium, temperature, humidity, ph, rainfall } = req.body;
+    const values = {};
+    const missing = [];
+    const invalid = [];
 
-    // Validation
-    if (!nitrogen || !phosphorus || !potassium || !temperature || !humidity || !ph || !rainfall) {
-      return res.status(400).json({ 
-        error: 'Missing required fields',
-        required: ['nitrogen', 'phosphorus', 'potassium', 'temperature', 'humidity', 'ph', 'rainfall']
+    for (const field of REQUIRED_FIELDS) {
+      if (req.body[field] === undefined || req.body[field] === null || req.body[field] === '') {
+        missing.push(field);
+        continue;
+      }
+
+      const value = Number(req.body[field]);
+      if (!Number.isFinite(value)) {
+        invalid.push(field);
+      } else {
+        values[field] = value;
+      }
+    }
+
+    if (missing.length || invalid.length) {
+      return res.status(400).json({
+        error: 'Invalid or missing input values',
+        missing,
+        invalid,
+        required: REQUIRED_FIELDS,
       });
     }
 
-    // Forward request to Python ML service
-    const flaskUrl = process.env.FLASK_ML_SERVICE_URL || 'http://localhost:5001';
-    
-    const response = await axios.post(`${flaskUrl}/predict/crop`, {
-      nitrogen: parseFloat(nitrogen),
-      phosphorus: parseFloat(phosphorus),
-      potassium: parseFloat(potassium),
-      temperature: parseFloat(temperature),
-      humidity: parseFloat(humidity),
-      ph: parseFloat(ph),
-      rainfall: parseFloat(rainfall)
-    }, {
-      timeout: 10000 // 10 seconds timeout
-    });
+    const flaskUrl = (process.env.FLASK_ML_SERVICE_URL || 'http://localhost:5001').replace(/\/$/, '');
+    const response = await axios.post(`${flaskUrl}/predict/crop`, values, { timeout: 10000 });
 
-    res.json(response.data);
+    return res.json(response.data);
   } catch (error) {
     console.error('Crop recommendation error:', error.message);
-    
-    if (error.code === 'ECONNREFUSED') {
-      return res.status(503).json({ 
-        error: 'ML service is not available. Please ensure the Python Flask service is running on port 5001.' 
+
+    if (error.code === 'ECONNREFUSED' || error.code === 'ETIMEDOUT') {
+      return res.status(503).json({
+        error: 'ML service is not available. Start the Python Flask service on port 5001.',
       });
     }
 
-    res.status(500).json({ 
+    return res.status(error.response?.status || 500).json({
       error: 'Failed to get crop recommendation',
-      message: error.response?.data?.error || error.message
+      message: error.response?.data?.error || error.message,
     });
   }
 });

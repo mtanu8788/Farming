@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:5000/api').replace(/\/$/, '');
 
 const api = axios.create({
   baseURL: API_URL,
@@ -9,34 +9,33 @@ const api = axios.create({
   },
 });
 
-// Disease Detection
 export const detectDisease = async (imageFile) => {
   const formData = new FormData();
   formData.append('image', imageFile);
-  
-  const response = await axios.post(`${API_URL}/disease/detect`, formData, {
-    headers: {
-      'Content-Type': 'multipart/form-data',
-    },
+
+  const response = await api.post('/disease/detect', formData, {
+    timeout: 35000,
   });
   return response.data;
 };
 
-// Fertilizer Recommendation
 export const getFertilizerRecommendation = async (data) => {
   const response = await api.post('/fertilizer/recommend', data);
   return response.data;
 };
 
-// Weather Forecast
 export const getWeatherForecast = async (city = 'Pune') => {
-  const response = await api.get(`/weather/forecast?city=${city}`);
+  const response = await api.get('/weather/forecast', { params: { city } });
   return response.data;
 };
 
-// Crop Recommendation
 export const getCropRecommendation = async (data) => {
   const response = await api.post('/crop/recommend', data);
+  return response.data;
+};
+
+export const askFarmerAssistant = async (message) => {
+  const response = await api.post('/chat/ask', { message });
   return response.data;
 };
 

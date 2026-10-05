@@ -82,9 +82,9 @@ const Home = ({ setActiveTab }) => {
       {/* Trust Bar / Quick Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-20">
         {[
-          { label: 'Accuracy', val: '95%', icon: ShieldCheck },
-          { label: 'Diseases', val: '50+', icon: BarChart3 },
-          { label: 'Crops', val: '30+', icon: Sprout },
+          { label: 'ML Engine', val: 'AI', icon: ShieldCheck },
+          { label: 'Disease Classes', val: '38', icon: BarChart3 },
+          { label: 'Crop Classes', val: '6', icon: Sprout },
           { label: 'Languages', val: '3', icon: Globe }
         ].map((stat, i) => (
           <div key={i} className="bg-white border border-slate-100 rounded-[2rem] p-8 text-center shadow-sm hover:shadow-md transition-shadow">
@@ -151,9 +151,9 @@ const Home = ({ setActiveTab }) => {
           <h3 className="text-sm font-black text-emerald-600 uppercase tracking-[0.3em] mb-4">The Methodology</h3>
           <h2 className="text-4xl font-black text-slate-900 tracking-tight mb-6">Scientific precision meet intuitive design.</h2>
           <p className="text-slate-500 font-medium text-lg leading-relaxed mb-8">
-            Our platform leverages deep learning models trained on millions of agricultural data points. 
-            By combining real-time meteorological data with localized soil composition, we provide 
-            recommendations that are both scientifically backed and locally relevant.
+            Our platform combines a crop recommendation model, rule-based fertilizer guidance, optional CNN disease detection,
+            and real-time weather data. Use the results as decision support and confirm treatment recommendations with
+            a qualified agricultural professional when needed.
           </p>
           <div className="space-y-4">
             {[
@@ -195,7 +195,7 @@ const Home = ({ setActiveTab }) => {
       <div className="bg-emerald-600 rounded-[3rem] p-12 text-center text-white shadow-2xl shadow-emerald-200">
         <h2 className="text-4xl font-black tracking-tight mb-4">Ready to optimize your harvest?</h2>
         <p className="text-emerald-100 font-medium mb-8 max-w-2xl mx-auto italic">
-          Join thousands of farmers using Smart Farming to increase their efficiency and ensure sustainable food production.
+          Use the available AI and data-driven tools to explore crop, fertilizer, disease, and weather insights for your farm.
         </p>
         <div className="flex flex-col sm:flex-row justify-center gap-4">
           <button onClick={() => setActiveTab('crop')} className="bg-white text-emerald-600 px-10 py-4 rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-slate-50 transition-colors">

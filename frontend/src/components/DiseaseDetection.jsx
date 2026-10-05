@@ -39,6 +39,10 @@ const DiseaseDetection = () => {
       canvas.height = video.videoHeight;
       canvas.getContext('2d').drawImage(video, 0, 0);
       canvas.toBlob((blob) => {
+        if (!blob) {
+          setError('Could not capture the camera image. Please try again.');
+          return;
+        }
         const file = new File([blob], "capture.jpg", { type: "image/jpeg" });
         setSelectedImage(file);
         setPreviewUrl(URL.createObjectURL(file));

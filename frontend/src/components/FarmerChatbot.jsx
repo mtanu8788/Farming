@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import axios from "axios";
+import { askFarmerAssistant } from "../services/api";
 import ReactMarkdown from "react-markdown";
 import { Maximize2, Minimize2, X, Send, MessageCircle, Loader2 } from "lucide-react";
 
@@ -12,9 +12,6 @@ export default function FarmerChatbot() {
   ]);
   const [loading, setLoading] = useState(false);
   const scrollRef = useRef(null);
-
-  // 🟢 CONFIG: Change this to your actual backend URL in production
-  const API_URL = "http://localhost:5000/api/chat/ask"; 
 
   // Auto-scroll to bottom
   useEffect(() => {
@@ -30,11 +27,11 @@ export default function FarmerChatbot() {
     setLoading(true);
 
     try {
-      const res = await axios.post(API_URL, { message: userMessage });
-      setMessages(prev => [...prev, { bot: res.data.reply }]);
+      const data = await askFarmerAssistant(userMessage);
+      setMessages(prev => [...prev, { bot: data.reply }]);
     } catch (err) {
       console.error("Chat Error:", err);
-      setMessages(prev => [...prev, { bot: "⚠️ Connection error. Please ensure the server is running." }]);
+      setMessages(prev => [...prev, { bot: `⚠️ ${err.response?.data?.error || "The AI assistant is unavailable. Please check the backend and Gemini configuration."}` }]);
     } finally {
       setLoading(false);
     }
@@ -151,7 +148,7 @@ export default function FarmerChatbot() {
             <span className="absolute inset-0 rounded-full bg-green-500 animate-ping opacity-20"></span>
             
             <div className="flex items-center gap-2">
-              <MessageCircle size={29} />
+              <MessageCircle size={28} />
               <span className="font-bold pr-1">AI Assistant</span>
             </div>
           </button>
