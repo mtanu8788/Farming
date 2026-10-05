@@ -10,4 +10,4 @@ opencv-python>=4.8,<5
 # Optional: required only to load ml_models/disease_detection/disease_model.h5.
 # The bundled H5 model was saved with Keras 3.x. Install a TensorFlow release
 # compatible with your Python version before enabling CNN disease detection.
-# tensorflow>=2.20,<2.21
+tensorflow>=2.20,<2.21
